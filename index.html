@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Noor Studio">
+<meta name="theme-color" content="#06352a">
+<title>Noor Studio — Images & Vidéos islamiques</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Scheherazade+New:wght@400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=EB+Garamond:ital@0;1&family=Jost:wght@300;400;500;600&display=swap');
+:root{
+  --emerald-deep:#06352a;--emerald:#0b6e4f;--gold:#c9a227;--gold-light:#e8d59a;
+  --gold-deep:#a8842a;--ivory:#f7f3e8;--ink:#04261d;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{font-family:'Jost',sans-serif;color:var(--ivory);min-height:100vh;overflow-x:hidden;
+  background:radial-gradient(circle at 20% 10%,rgba(201,162,39,.08),transparent 40%),
+  radial-gradient(circle at 80% 90%,rgba(11,110,79,.12),transparent 45%),
+  linear-gradient(150deg,#041d16,#06352a 55%,#04261d);}
+header{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;
+  border-bottom:1px solid rgba(201,162,39,.18);position:sticky;top:0;z-index:50;
+  background:rgba(4,29,22,.6);backdrop-filter:blur(6px)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand .mark{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--gold-light),var(--gold-deep));
+  box-shadow:0 6px 24px rgba(201,162,39,.35);color:var(--emerald-deep);font-size:23px;font-family:'Reem Kufi'}
+.brand h1{font-family:'Cormorant Garamond';font-weight:600;font-size:25px}
+.brand h1 span{color:var(--gold-light)}
+.brand small{display:block;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(247,243,232,.5)}
+.mode-tabs{display:flex;gap:8px;background:rgba(4,29,22,.5);padding:5px;border-radius:12px;border:1px solid rgba(201,162,39,.2)}
+.mode-tab{padding:9px 22px;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;transition:.2s;color:rgba(247,243,232,.7)}
+.mode-tab.active{background:linear-gradient(135deg,var(--gold-light),var(--gold-deep));color:var(--emerald-deep);font-weight:600}
+.layout{display:grid;grid-template-columns:390px 1fr;min-height:calc(100vh - 81px)}
+@media(max-width:980px){
+  .layout{grid-template-columns:1fr}
+  /* On mobile: preview on top (sticky), controls below */
+  .layout{display:flex;flex-direction:column}
+  .stage{order:-1;position:sticky;top:0;z-index:30;padding:14px 12px;gap:12px;
+    background:rgba(4,29,22,.96);backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(201,162,39,.2)}
+  .controls{border-right:none;max-height:none;padding:18px 16px 40px;overflow-y:visible;
+    padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+  .canvas-wrap{max-width:92vw}
+  header{padding:12px 14px;flex-wrap:wrap;gap:8px}
+  .brand h1{font-size:21px}
+  .mode-tabs{order:3;width:100%;justify-content:center}
+  .mode-tab{flex:1;text-align:center;padding:11px 8px}
+  .header-actions,.brand small{display:none}
+  /* bigger touch targets */
+  .btn{padding:14px 20px;font-size:15px}
+  .chip{padding:11px 16px;font-size:14px}
+  textarea,input[type=text],select{padding:13px;font-size:16px} /* 16px stops iOS auto-zoom */
+  .icon-grid{grid-template-columns:repeat(4,1fr)}
+  .icon-btn svg{width:30px;height:30px}
+  .download-row{width:100%}
+  .download-row .btn{flex:1}
+  input[type=range]{height:8px}
+  input[type=range]::-webkit-slider-thumb{width:24px;height:24px}
+  .lib-grid{grid-template-columns:1fr 1fr}
+}
+@media(max-width:560px){
+  .lib-grid{grid-template-columns:1fr}
+  .icon-grid{grid-template-columns:repeat(3,1fr)}
+}
+.controls{padding:26px;border-right:1px solid rgba(201,162,39,.15);overflow-y:auto;max-height:calc(100vh - 81px)}
+.stage{display:flex;flex-direction:column;align-items:center;padding:32px;gap:22px}
+.group{margin-bottom:24px}
+.group>label.title{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:2.5px;
+  text-transform:uppercase;color:var(--gold-light);margin-bottom:11px;font-weight:500}
+.group>label.title::before{content:'';width:16px;height:1px;background:var(--gold)}
+textarea,input[type=text],select{width:100%;background:rgba(4,29,22,.6);border:1px solid rgba(201,162,39,.25);
+  color:var(--ivory);border-radius:10px;padding:11px 13px;font-family:'Jost';font-size:14px;resize:vertical;transition:.2s}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,162,39,.12)}
+textarea{min-height:80px;line-height:1.5}
+.arabic-input{font-family:'Scheherazade New';font-size:21px;direction:rtl;text-align:right;line-height:1.9}
+select{appearance:none;cursor:pointer;background-repeat:no-repeat;background-position:right 13px center;padding-right:32px;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23c9a227'><path d='M6 9L1 3h10z'/></svg>")}
+.hint{font-size:11px;color:rgba(247,243,232,.45);margin-top:6px;line-height:1.4}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:32px;height:32px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.2s}
+.sw.active{border-color:var(--gold);transform:scale(1.1)}.sw:hover{transform:scale(1.08)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{padding:8px 13px;border-radius:18px;cursor:pointer;font-size:13px;border:1px solid rgba(201,162,39,.25);
+  background:rgba(4,29,22,.4);transition:.2s;color:rgba(247,243,232,.8)}
+.chip:hover{border-color:var(--gold-light)}
+.chip.active{background:linear-gradient(135deg,var(--gold-light),var(--gold-deep));color:var(--emerald-deep);font-weight:600;border-color:transparent}
+.slider-row{display:flex;align-items:center;gap:12px;margin-bottom:9px}
+.slider-row span{font-size:12px;color:rgba(247,243,232,.6);width:74px}
+input[type=range]{flex:1;-webkit-appearance:none;height:4px;border-radius:4px;background:rgba(201,162,39,.25)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer}
+.btn{border:none;cursor:pointer;font-family:'Jost';font-weight:500;padding:12px 20px;border-radius:10px;font-size:14px;transition:.22s}
+.btn-gold{background:linear-gradient(135deg,var(--gold-light),var(--gold-deep));color:var(--emerald-deep);font-weight:600;box-shadow:0 6px 20px rgba(201,162,39,.3)}
+.btn-gold:hover{transform:translateY(-2px)}
+.btn-ghost{background:rgba(201,162,39,.1);color:var(--gold-light);border:1px solid rgba(201,162,39,.3)}
+.btn-block{width:100%;display:block}
+.lib-item{position:relative}
+.lib-del{position:absolute;top:4px;right:6px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;
+  font-size:13px;line-height:1;color:rgba(247,243,232,.5);cursor:pointer;background:rgba(0,0,0,.25)}
+.lib-del:hover{color:#ffb4a0;background:rgba(180,60,40,.3)}
+.lib-saved{border-color:rgba(201,162,39,.45)}
+.sub-row{background:rgba(4,29,22,.5);border:1px solid rgba(201,162,39,.18);border-radius:10px;padding:9px;margin-bottom:8px}
+.sub-row textarea{min-height:48px;font-size:13px}
+.sub-times{display:flex;gap:6px;align-items:center;margin-top:6px}
+.sub-times input{width:60px;text-align:center;padding:6px;font-size:12px}
+.sub-times .lbl{font-size:11px;color:rgba(247,243,232,.5)}
+.sub-times button{padding:5px 8px;font-size:11px;border-radius:7px;background:rgba(201,162,39,.12);color:var(--gold-light);border:1px solid rgba(201,162,39,.3);cursor:pointer}
+.sub-times .del{margin-left:auto;color:#ffb4a0;border-color:rgba(180,60,40,.4);background:rgba(180,60,40,.15)}
+.btn-ghost:hover{background:rgba(201,162,39,.2)}
+.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.canvas-wrap{position:relative;border-radius:16px;overflow:hidden;background:#000;
+  box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(201,162,39,.2)}
+canvas{display:block}
+.download-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.lib-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.lib-item{padding:9px 11px;border-radius:10px;cursor:pointer;font-size:12px;background:rgba(4,29,22,.5);
+  border:1px solid rgba(201,162,39,.18);transition:.2s}
+.lib-item:hover{border-color:var(--gold);background:rgba(11,110,79,.3)}
+.lib-item .ar{font-family:'Amiri';font-size:17px;color:var(--gold-light);direction:rtl;display:block;margin-bottom:2px}
+.lib-item small{color:rgba(247,243,232,.55)}
+.icon-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.icon-btn{border-radius:9px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px 4px;
+  background:rgba(4,29,22,.5);border:1px solid rgba(201,162,39,.18);transition:.2s}
+.icon-btn:hover{border-color:var(--gold);background:rgba(11,110,79,.3)}
+.icon-btn.active{border-color:var(--gold);background:rgba(201,162,39,.2)}
+.icon-btn svg{width:26px;height:26px;stroke:var(--gold-light);fill:none;stroke-width:1.6}
+.icon-cap{font-size:9.5px;color:rgba(247,243,232,.65);text-align:center;line-height:1.1}
+.status{font-size:12px;padding:8px 12px;border-radius:8px;margin-top:8px;text-align:center}
+.status.load{background:rgba(201,162,39,.12);color:var(--gold-light)}
+.status.err{background:rgba(180,60,40,.2);color:#ffb4a0}
+.status.ok{background:rgba(40,140,90,.18);color:#9fe8c0}
+.verse-nav{display:flex;align-items:center;gap:8px;margin-top:10px}
+.verse-nav button{flex:0 0 auto;width:40px;height:38px;border-radius:9px;font-size:18px}
+.verse-nav .vinfo{flex:1;text-align:center;font-size:13px;color:rgba(247,243,232,.7)}
+.spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(201,162,39,.3);
+  border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.section-hidden{display:none}
+audio{width:100%;margin-top:10px}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="mark">ن</div>
+    <div><h1>Noor <span>Studio</span></h1><small>Images & Vidéos islamiques</small></div>
+  </div>
+  <div class="mode-tabs">
+    <div class="mode-tab active" data-mode="image" onclick="setMode('image')">Image</div>
+    <div class="mode-tab" data-mode="video" onclick="setMode('video')">Vidéo (Coran)</div>
+    <div class="mode-tab" data-mode="subtitle" onclick="setMode('subtitle')">Sous-titres</div>
+  </div>
+  <button class="btn btn-ghost" onclick="randomBg()">✦ Aléatoire</button>
+</header>
+
+<div class="layout">
+  <aside class="controls">
+    <!-- ===== IMAGE MODE ===== -->
+    <div id="imageControls">
+      <div class="group">
+        <label class="title">Bibliothèque de rappels</label>
+        <div class="chips" id="catChips" style="margin-bottom:10px"></div>
+        <div class="lib-grid" id="library"></div>
+      </div>
+      <div class="group">
+        <label class="title">Titre arabe (calligraphie)</label>
+        <input type="text" id="arTitle" class="arabic-input" value="﴿ ٱلصَّبْر ﴾">
+        <input type="text" id="latinTitle" placeholder="Translittération (optionnel)" value="As-Sabr" style="margin-top:10px">
+        <div class="chips" style="margin-top:10px" id="calliFontChips"></div>
+      </div>
+      <div class="group">
+        <label class="title">Image de contexte</label>
+        <div class="icon-grid" id="iconGrid"></div>
+        <div class="hint">Choisis une icône dorée selon le thème (cœur, horloge, mosquée…) ou importe ta photo ↓</div>
+        <input type="file" id="photoUpload" accept="image/*" style="margin-top:10px;font-size:12px">
+      </div>
+      <div class="group">
+        <label class="title">Texte / Rappel</label>
+        <textarea id="bodyText">« La perte du temps est plus grave que la mort, car la perte du temps te coupe d'Allah et de la demeure dernière, tandis que la mort te coupe de ce bas monde. »</textarea>
+        <input type="text" id="attrText" placeholder="Auteur (ex: L'imam Ibn Al-Qayyim a dit :)" value="L'imam Ibn Al-Qayyim a dit :" style="margin-top:9px">
+        <input type="text" id="sourceText" placeholder="Source (ex: Al-Fawâ'id, p.31)" value="Al-Fawâ'id, p.31" style="margin-top:9px">
+        <button class="btn btn-ghost btn-block" onclick="saveCurrentRappel()" style="margin-top:10px">★ Enregistrer ce rappel dans la bibliothèque</button>
+        <div class="hint">Il sera ajouté à la catégorie sélectionnée dans la bibliothèque et conservé pour tes prochaines sessions.</div>
+      </div>
+    </div>
+
+    <!-- ===== VIDEO MODE ===== -->
+    <div id="videoControls" class="section-hidden">
+      <div class="group">
+        <label class="title">Sourate</label>
+        <select id="surahSelect"><option>Chargement…</option></select>
+        <div id="surahStatus" class="status load"><span class="spinner"></span>Connexion à l'API du Coran…</div>
+      </div>
+      <div class="group">
+        <label class="title">Récitateur</label>
+        <select id="reciterSelect"></select>
+      </div>
+      <div class="group">
+        <label class="title">Contenu de la vidéo</label>
+        <div class="chips" id="vScopeChips">
+          <div class="chip active" data-s="full">Sourate entière</div>
+          <div class="chip" data-s="verse">Verset seul</div>
+        </div>
+        <div class="hint">« Sourate entière » enchaîne tous les versets avec la récitation continue. « Verset seul » n'enregistre que le verset choisi.</div>
+      </div>
+      <div class="group">
+        <label class="title">Verset</label>
+        <div class="verse-nav">
+          <button class="btn btn-ghost" onclick="changeVerse(-1)">‹</button>
+          <div class="vinfo" id="verseInfo">—</div>
+          <button class="btn btn-ghost" onclick="changeVerse(1)">›</button>
+        </div>
+        <select id="verseSelect" style="margin-top:10px"></select>
+        <div id="verseStatus"></div>
+        <audio id="previewAudio" controls></audio>
+      </div>
+      <div class="group">
+        <label class="title">Affichage</label>
+        <div class="chips" id="vDisplayChips">
+          <div class="chip active" data-v="both">Arabe + Français</div>
+          <div class="chip" data-v="ar">Arabe seul</div>
+          <div class="chip" data-v="fr">Français seul</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SUBTITLE MODE ===== -->
+    <div id="subtitleControls" class="section-hidden">
+      <div class="group">
+        <label class="title">Ta vidéo</label>
+        <input type="file" id="videoUpload" accept="video/*" style="font-size:12px">
+        <div id="videoStatus" class="hint">Importe une vidéo (.mp4, .mov, .webm). Le son d'origine est conservé.</div>
+      </div>
+      <div class="group">
+        <label class="title">1 · Écris tes sous-titres</label>
+        <textarea id="subBulk" placeholder="Un sous-titre par ligne :&#10;Au nom d'Allah&#10;Le Tout Miséricordieux&#10;Le Très Miséricordieux" style="min-height:120px"></textarea>
+        <div class="hint">Une ligne = un sous-titre. Écris-les dans l'ordre où ils apparaissent.</div>
+      </div>
+      <div class="group">
+        <label class="title">2 · Cale-les en direct</label>
+        <div class="hint" style="margin-bottom:8px">Lance la vidéo et clique « ⏭ Suivant » (ou appuie sur la barre Espace) au moment où chaque sous-titre doit apparaître — par exemple sur chaque pause. Mets le ralenti pour caler plus précisément.</div>
+        <div class="chips" id="cueSpeedChips" style="margin-bottom:10px">
+          <div class="chip" data-r="0.5">Ralenti 0,5×</div>
+          <div class="chip" data-r="0.75">0,75×</div>
+          <div class="chip active" data-r="1">Normal 1×</div>
+        </div>
+        <button class="btn btn-gold btn-block" id="liveCueBtn" onclick="toggleLiveCue()">▶ Démarrer le calage en direct</button>
+        <div id="liveCueStatus" class="hint" style="text-align:center;margin-top:8px"></div>
+      </div>
+      <div class="group">
+        <label class="title">Ajustement fin (optionnel)</label>
+        <div id="subList"></div>
+        <div class="hint">Après le calage, tu peux réajuster ici chaque temps si besoin.</div>
+      </div>
+      <div class="group">
+        <label class="title">Style des sous-titres</label>
+        <div class="chips" id="subStyleChips">
+          <div class="chip active" data-s="card">Carte dorée</div>
+          <div class="chip" data-s="bar">Bandeau bas</div>
+          <div class="chip" data-s="plain">Texte simple</div>
+        </div>
+        <div class="slider-row" style="margin-top:11px"><span>Taille</span><input type="range" id="subSize" min="24" max="72" value="40"></div>
+        <div class="slider-row"><span>Position</span><input type="range" id="subPos" min="40" max="92" value="78"></div>
+      </div>
+    </div>
+
+    <!-- ===== SHARED ===== -->
+    <div class="group" id="formatGroup">
+      <label class="title">Format</label>
+      <div class="chips" id="formatChips">
+        <div class="chip active" data-w="1080" data-h="1080">Carré 1:1</div>
+        <div class="chip" data-w="1080" data-h="1920">Story 9:16</div>
+      </div>
+    </div>
+    <div class="group">
+      <label class="title">Thème du fond</label>
+      <div class="chips" id="bgChips"></div>
+    </div>
+    <div class="group">
+      <label class="title">Palette dorée</label>
+      <div class="swatches" id="palette"></div>
+    </div>
+    <div class="group">
+      <label class="title">Motif décoratif</label>
+      <div class="chips" id="patternChips"></div>
+      <div class="slider-row" style="margin-top:11px"><span>Intensité</span><input type="range" id="patternOpacity" min="0" max="100" value="22"></div>
+    </div>
+    <div class="group">
+      <label class="title">Cadre & ornements</label>
+      <div class="chips" id="frameChips"></div>
+    </div>
+    <div class="group">
+      <label class="title">Réglages texte</label>
+      <div class="slider-row"><span>Titre AR</span><input type="range" id="titleSize" min="40" max="170" value="92"></div>
+      <div class="slider-row"><span>Corps</span><input type="range" id="bodySize" min="22" max="80" value="40"></div>
+      <div class="slider-row"><span>Voile</span><input type="range" id="overlay" min="0" max="90" value="0"></div>
+    </div>
+    <div class="group">
+      <label class="title">Signature</label>
+      <input type="text" id="handle" value="@alfirqatounajiahofficiel">
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="card" width="1080" height="1080"></canvas>
+    </div>
+    <!-- image actions -->
+    <div class="download-row" id="imageActions">
+      <button class="btn btn-gold" onclick="downloadImage(2)">⬇ Télécharger HD (×2)</button>
+      <button class="btn btn-ghost" onclick="downloadImage(1)">1080px</button>
+    </div>
+    <!-- video actions -->
+    <div class="download-row section-hidden" id="videoActions">
+      <button class="btn btn-gold" id="recBtn" onclick="toggleRecord()">⬤ Enregistrer la vidéo</button>
+      <button class="btn btn-ghost" id="playBtn" onclick="playPreview()">▶ Aperçu animé</button>
+    </div>
+    <!-- subtitle timeline -->
+    <div class="section-hidden" id="subTimeline" style="width:100%;max-width:520px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span id="subCurTime" style="font-size:12px;color:var(--gold-light);font-variant-numeric:tabular-nums;min-width:42px">0:00</span>
+        <input type="range" id="subScrub" min="0" max="1000" value="0" style="flex:1">
+        <span id="subDurTime" style="font-size:12px;color:rgba(247,243,232,.6);font-variant-numeric:tabular-nums;min-width:42px">0:00</span>
+      </div>
+    </div>
+    <!-- subtitle actions -->
+    <div class="download-row section-hidden" id="subtitleActions">
+      <button class="btn btn-ghost" id="subPlayBtn" onclick="toggleSubPreview()">▶ Lecture</button>
+      <button class="btn btn-gold" id="subExportBtn" onclick="exportSubtitledVideo()">⬇ Exporter le .mp4 sous-titré</button>
+    </div>
+    <video id="srcVideo" playsinline style="display:none"></video>
+    <div id="recStatus" class="hint" style="max-width:480px;text-align:center"></div>
+    <div class="hint" style="max-width:480px;text-align:center" id="footHint">
+      Mode Image : grande calligraphie + icône de contexte, façon Al Rissalah. Tout en HD.
+    </div>
+  </main>
+</div>
+
+<script>
+/* =================== CONFIG =================== */
+const API='https://api.alquran.cloud/v1';
+const CDN='https://cdn.islamic.network/quran/audio'; // /{bitrate}/{edition}/{globalAyah}.mp3
+const FR_EDITION='fr.hamidullah';
+const AR_EDITION='quran-uthmani'; // texte complet (chedda + toutes voyelles) ; on retire juste le mîm d'iqlab en code
+const RECITERS=[
+  {id:'yasser',name:'Yasser Al-Dosari',src:'everyayah',folder:'Yasser_Ad-Dussary_128kbps'},
+  {id:'husary',name:'Mahmoud Al-Husary',src:'everyayah',folder:'Husary_128kbps'},
+  {id:'husary_mujawwad',name:'Al-Husary (Mujawwad)',src:'everyayah',folder:'Husary_128kbps_Mujawwad'},
+  {id:'abdulbasit',name:'Abdul Basit (Murattal)',src:'everyayah',folder:'Abdul_Basit_Murattal_64kbps'},
+  {id:'minshawi',name:'Al-Minshawi (Murattal)',src:'everyayah',folder:'Minshawy_Murattal_128kbps'},
+  {id:'sudais',name:'Abdul Rahman As-Sudais',src:'everyayah',folder:'Abdurrahmaan_As-Sudais_192kbps'},
+  {id:'shuraim',name:'Saoud Ash-Shuraim',src:'everyayah',folder:'Saood_ash-Shuraym_64kbps'},
+  {id:'maher',name:'Maher Al-Muaiqly',src:'cdn',edition:'ar.mahermuaiqly'},
+  {id:'shatri',name:'Abu Bakr Al-Shatri',src:'everyayah',folder:'Abu_Bakr_Ash-Shaatree_128kbps'},
+  {id:'ajamy',name:'Ahmed Al-Ajamy',src:'everyayah',folder:'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net'},
+  {id:'alafasy',name:'Mishary Al-Afasy',src:'everyayah',folder:'Alafasy_128kbps'},
+  {id:'juhany',name:'Abdullah Al-Juhany',src:'everyayah',folder:'Abdullaah_3awwaad_Al-Juhaynee_128kbps'},
+];
+const EVERYAYAH='https://everyayah.com/data';
+// Build per-ayah audio URL. everyayah: {folder}/SSSAAA.mp3 ; cdn: islamic.network by global ayah number
+function audioUrl(reciterId, surah, ayahInSurah, globalAyah){
+  const r=RECITERS.find(x=>x.id===reciterId)||RECITERS[0];
+  if(r.src==='cdn'){ return `${CDN}/128/${r.edition}/${globalAyah}.mp3`; }
+  const ss=String(surah).padStart(3,'0'), aa=String(ayahInSurah).padStart(3,'0');
+  return `${EVERYAYAH}/${r.folder}/${ss}${aa}.mp3`;
+}
+
+const calliFonts=[{name:'Amiri',css:'Amiri'},{name:'Scheherazade',css:'Scheherazade New'},{name:'Reem Kufi',css:'Reem Kufi'}];
+const backgrounds=[
+  {id:'lightivory',name:'Ivoire clair',light:true,stops:[['#ffffff',0],['#f6f1e6',1]],vignette:.08},
+  {id:'nightmosque',name:'Mosquée nuit',stops:[['#020d0a',0],['#06352a',.5],['#0b6e4f',1]],vignette:.6},
+  {id:'emerald',name:'Émeraude',stops:[['#04261d',0],['#0b6e4f',1]],vignette:.4},
+  {id:'goldglow',name:'Lueur dorée',stops:[['#06352a',0],['#0d4636',.6],['#1a5c44',1]],vignette:.35,glow:'#c9a227'},
+  {id:'ink',name:'Encre & or',stops:[['#020806',0],['#06352a',1]],vignette:.7},
+  {id:'darkgold',name:'Noir doré',stops:[['#0a0a0a',0],['#1a1408',1]],vignette:.5,glow:'#c9a227'},
+];
+const patterns=['Aucun','Étoiles 8 br.','Arabesque','Grille géo.','Treillis'];
+const frames=['Aucun','Filet doré','Double cadre','Arche','Coins ornés','Bandeau bas'];
+const palettes=[
+  {name:'Or classique',gold:'#c9a227',light:'#e8d59a'},
+  {name:'Or chaud',gold:'#d4af37',light:'#f0d97d'},
+  {name:'Cuivre',gold:'#c8893f',light:'#e8b878'},
+  {name:'Or pâle',gold:'#bfa66a',light:'#e6d9b0'},
+];
+const library=[
+  // Unicité (Tawhid)
+  {cat:'Unicité',ar:'﷽',lat:'Bismillah ar-Rahman ar-Rahim',body:'Au nom d\u2019Allah, le Tout Miséricordieux, le Très Miséricordieux.',attr:'',src:'Al-Fatiha · v.1',icon:'none'},
+  {cat:'Unicité',ar:'لَا إِلَٰهَ إِلَّا ٱللَّٰه',lat:'La ilaha illa Allah',body:'Il n\u2019y a pas plus tranchant pour le dos d\u2019Iblîs que la parole « Lâ ilâha illâ Allâh ».',attr:'Sufiân ath-Thawrî a dit :',src:'Siyar a\u2019lâm an-Nubalâ 7/260',icon:'none'},
+  {cat:'Unicité',ar:'﴿ ٱلْإِخْلَاص ﴾',lat:'Al-Ikhlas — La sincérité',body:'Les actes ne valent que par les intentions, et chacun n\u2019a que ce qu\u2019il a eu pour intention.',attr:'Le Prophète ﷺ a dit :',src:'Al-Bukhârî & Muslim',icon:'none'},
+  // Coran
+  {cat:'Coran',ar:'﴿ ذِكْر ﴾',lat:'Dhikr — Le rappel',body:'C\u2019est dans le rappel d\u2019Allah que les cœurs trouvent leur apaisement.',attr:'Allah a dit :',src:'Ar-Ra\u2019d · v.28',icon:'coran'},
+  {cat:'Coran',ar:'﴿ يُسْرًا ﴾',lat:'Inna ma\u2019al \u2019usri yusra',body:'Car à côté de la difficulté est, certes, une facilité.',attr:'Allah a dit :',src:'Ash-Sharh · v.6',icon:'coran'},
+  // Invocation
+  {cat:'Invocation',ar:'﴿ ٱلدُّعَاء ﴾',lat:'Ad-Du\u2019a — L\u2019invocation',body:'L\u2019invocation est l\u2019adoration même.',attr:'Le Prophète ﷺ a dit :',src:'At-Tirmidhî n°2969',icon:'invocation'},
+  {cat:'Invocation',ar:'﴿ ٱلْاسْتِغْفَار ﴾',lat:'Al-Istighfâr',body:'Ô Allah, Tu es certes Pardonneur et Tu aimes le pardon, alors pardonne-moi.',attr:'Invocation de la Nuit du Destin :',src:'At-Tirmidhî n°3513',icon:'invocation'},
+  // Patience & Repentir
+  {cat:'Repentir',ar:'﴿ ٱلصَّبْر ﴾',lat:'As-Sabr — La patience',body:'Et fais preuve de patience. Ta patience ne vient que d\u2019Allah.',attr:'Allah a dit :',src:'An-Nahl · v.127',icon:'repentir'},
+  {cat:'Repentir',ar:'﴿ ٱلتَّوْبَة ﴾',lat:'At-Tawba — Le repentir',body:'Ô vous qui avez cru ! Repentez-vous à Allah d\u2019un repentir sincère.',attr:'Allah a dit :',src:'At-Tahrîm · v.8',icon:'repentir'},
+  // Comportement
+  {cat:'Comportement',ar:'﴿ ٱلْوَقْت ﴾',lat:'Al-Waqt — Le temps',body:'La perte du temps est plus grave que la mort, car elle te coupe d\u2019Allah et de la demeure dernière.',attr:'L\u2019imam Ibn Al-Qayyim a dit :',src:'Al-Fawâ\u2019id, p.31',icon:'comportement'},
+  {cat:'Comportement',ar:'﴿ ٱلْمَحَبَّة ﴾',lat:'Al-Mahabba — L\u2019amour',body:'Ceux qui croient sont les plus ardents en l\u2019amour d\u2019Allah.',attr:'Allah a dit :',src:'Al-Baqara · v.165',icon:'comportement'},
+  // Aumône
+  {cat:'Aumône',ar:'﴿ ٱلصَّدَقَة ﴾',lat:'As-Sadaqah — L\u2019aumône',body:'L\u2019aumône éteint les péchés comme l\u2019eau éteint le feu.',attr:'Le Prophète ﷺ a dit :',src:'At-Tirmidhî',icon:'aumone'},
+  // Science
+  {cat:'Science',ar:'﴿ ٱلْعِلْم ﴾',lat:'Al-\u2019Ilm — La science',body:'L\u2019apprentissage de la science est une obligation pour tout musulman.',attr:'Le Prophète ﷺ a dit :',src:'Ibn Mâjah n°184',icon:'science'},
+  {cat:'Science',ar:'﴿ ٱلْأُخُوَّة ﴾',lat:'Al-Ukhuwwa — La fraternité',body:'Les croyants ne sont que des frères. Établissez la concorde entre vos frères.',attr:'Allah a dit :',src:'Al-Hujurât · v.10',icon:'science'},
+  // Sounnah
+  {cat:'Sounnah',ar:'﴿ ٱلسُّنَّة ﴾',lat:'As-Sunna',body:'La meilleure parole est celle d\u2019Allah, et la meilleure guidance celle de Muhammad ﷺ.',attr:'Le Prophète ﷺ a dit :',src:'Muslim n°867',icon:'sounnah'},
+  {cat:'Sounnah',ar:'﴿ ٱلْجَمَاعَة ﴾',lat:'Al-Jama\u2019a — Le groupe',body:'Attachez-vous tous ensemble au câble d\u2019Allah, et ne soyez pas divisés.',attr:'Allah a dit :',src:'Âl \u2019Imrân · v.103',icon:'sounnah'},
+];
+// Full 3ilmchar3i category list (each title = one category)
+const ALL_CATEGORIES=[
+  'Unicité','Coran','Sounnah','Invocation','Repentir','Comportement','Aumône','Science',
+  'Mariage – Divorce','Méthodologie','Jeûne – Ramadan','Rappels','Communauté Musulmane',
+  'Femme en Islam','Croyance et Innovations','Médecine Prophétique – Exorcisme',
+  'Enfants – Éducation et Enseignement','Prière','Actualités','Distraction – Musique – Image – Sport et Internet',
+  'Apprentissage','Mort et Funérailles','Fêtes en Islam – Vendredi et Fêtes Innovées',
+  'Individus et Réfutations','Péchés et Repentir','Groupes Égarés','Voie des Pieux Prédécesseurs',
+  'Expression','Appel à la Religion','Commerce – Usure et Métier','Paradis – Enfer','Terrorisme',
+  'Aliments et Boissons','Poèmes Islamiques','Purification','Homme Musulman','Famille',
+  'Mosquée – Appel à la Prière','Émigration','Mohamed ﷺ','Mois de l\u2019Hégire et Mois Sacrés',
+  'Langue et Civilisation Arabe','Hadith','Pèlerinage – Omra','Compagnons et Tabi\u2019un',
+  'Reconverti(e)','Djihâd','Monde de l\u2019Invisible (Anges – Démons – Ibliss)','Animaux',
+  'Voyage','Prophètes et Messagers'
+];
+// Default context icon per category (falls back to 'none' = no icon)
+const CAT_DEFAULT_ICON={
+  Unicité:'none',Coran:'coran',Sounnah:'sounnah',Invocation:'invocation',Repentir:'repentir',
+  Comportement:'comportement',Aumône:'aumone',Science:'science',Prière:'sounnah',
+  'Mort et Funérailles':'repentir','Péchés et Repentir':'repentir','Mohamed ﷺ':'sounnah',
+  Hadith:'science','Pèlerinage – Omra':'sounnah','Paradis – Enfer':'repentir',
+  'Mosquée – Appel à la Prière':'sounnah','Famille':'comportement','Femme en Islam':'comportement',
+  Mariage:'comportement','Jeûne – Ramadan':'repentir'
+};
+const CATEGORIES=['Toutes',...ALL_CATEGORIES];
+
+/* =================== STATE =================== */
+const S={
+  mode:'image',
+  arTitle:'﴿ ٱلصَّبْر ﴾',latinTitle:'As-Sabr',
+  body:"« La perte du temps est plus grave que la mort, car la perte du temps te coupe d'Allah et de la demeure dernière, tandis que la mort te coupe de ce bas monde. »",
+  attr:"L'imam Ibn Al-Qayyim a dit :",source:'Al-Fawâ\u2019id, p.31',
+  icon:'comportement', photo:null,
+  w:1080,h:1080,bg:backgrounds[0],pattern:1,patternOp:22,frame:1,
+  palette:palettes[0],calliFont:calliFonts[0],
+  titleSize:92,bodySize:40,overlay:0,handle:'@alfirqatounajiahofficiel',
+  // video
+  surah:null,surahName:'',reciter:RECITERS[0].id,verseIdx:0,verses:[],vDisplay:'both',vScope:'full',fade:1
+};
+
+/* =================== ICONS (gold line) =================== */
+const ICONS={
+  none:'',
+  coran:'M12 6C10 4.5 7 4 4 4.5v14C7 18 10 18.5 12 20 14 18.5 17 18 20 18.5v-14C17 4 14 4.5 12 6z M12 6v14',
+  invocation:'M5 9c0 5 3 9 7 9s7-4 7-9 M5 9c0-1.5.5-2.5 1.2-2.5S7.5 7.5 7.5 9 M19 9c0-1.5-.5-2.5-1.2-2.5S16.5 7.5 16.5 9 M9 8.5c0-2 1-3.5 1.5-3.5S11 6 11 8 M15 8.5c0-2-1-3.5-1.5-3.5S13 6 13 8',
+  repentir:'M12 4s5 6 5 10a5 5 0 01-10 0c0-4 5-10 5-10z',
+  comportement:'M12 20s-6-4-8-7.5C2.8 10 3.5 7 6 7c1.7 0 2.7 1.1 3.5 2.3C10.3 8.1 11.3 7 13 7c2.5 0 3.2 3 2 5.5C18 16 12 20 12 20z',
+  aumone:'M12 3a2 2 0 100 4 2 2 0 000-4z M5 21v-5a3 3 0 013-3h2l2 2 2-2h1a3 3 0 013 3v5 M12 9v4',
+  science:'M5 4h12v15a2 2 0 00-2-2H5z M5 4a2 2 0 00-2 2v11a2 2 0 002 2 M8 8h6 M8 11h6',
+  sounnah:'M5 20V10l7-5 7 5v10 M9 20v-4a3 3 0 016 0v4'
+};
+const CAT_ICON={Unicité:'none',Coran:'coran',Invocation:'invocation',Repentir:'repentir',Comportement:'comportement',Aumône:'aumone',Science:'science',Sounnah:'sounnah'};
+const ICON_LABEL={none:'Aucune',coran:'Coran',invocation:'Invocation',repentir:'Repentir',comportement:'Comportement',aumone:'Aumône',science:'Science',sounnah:'Sounnah'};
+const ICON_KEYS=Object.keys(ICONS);
+
+/* =================== UI BUILD =================== */
+function chip(c,arr,label,onpick,active=0){
+  const e=document.getElementById(c);e.innerHTML='';
+  arr.forEach((it,i)=>{const x=document.createElement('div');x.className='chip'+(i===active?' active':'');
+    x.textContent=label(it);x.onclick=()=>{[...e.children].forEach(y=>y.classList.remove('active'));x.classList.add('active');onpick(it,i);draw();};
+    e.appendChild(x);});
+}
+chip('calliFontChips',calliFonts,f=>f.name,f=>S.calliFont=f);
+chip('bgChips',backgrounds,b=>b.name,b=>S.bg=b);
+chip('patternChips',patterns,p=>p,(p,i)=>S.pattern=i,1);
+chip('frameChips',frames,f=>f,(f,i)=>S.frame=i,1);
+
+const palEl=document.getElementById('palette');
+palettes.forEach((p,i)=>{const sw=document.createElement('div');sw.className='sw'+(i===0?' active':'');
+  sw.style.background=`linear-gradient(135deg,${p.light},${p.gold})`;sw.title=p.name;
+  sw.onclick=()=>{[...palEl.children].forEach(x=>x.classList.remove('active'));sw.classList.add('active');S.palette=p;draw();};
+  palEl.appendChild(sw);});
+
+const libEl=document.getElementById('library');
+let activeCat='Toutes';
+
+/* ---- Saved rappels (persisted in localStorage) ---- */
+const SAVE_KEY='noor_saved_rappels';
+let savedRappels=[];
+function loadSaved(){
+  try{ savedRappels=JSON.parse(localStorage.getItem(SAVE_KEY)||'[]'); }
+  catch(e){ savedRappels=[]; }
+}
+function persistSaved(){
+  try{ localStorage.setItem(SAVE_KEY,JSON.stringify(savedRappels)); }
+  catch(e){ /* storage unavailable */ }
+}
+function saveCurrentRappel(){
+  const cat = (activeCat && activeCat!=='Toutes') ? activeCat : (S.latinTitle||'Rappels');
+  const item={cat, ar:S.arTitle, lat:S.latinTitle, body:S.body, attr:S.attr, src:S.source, icon:S.icon, saved:true, id:Date.now()};
+  if(!item.body && !item.ar){ flashHint('Ajoute au moins un titre ou un texte avant d\u2019enregistrer.'); return; }
+  savedRappels.push(item); persistSaved();
+  // jump to that category so the user sees it
+  activeCat=item.cat;
+  [...catEl.children].forEach(y=>y.classList.toggle('active',y.textContent===activeCat));
+  renderLibrary();
+  flashHint('★ Rappel enregistré dans « '+item.cat+' ».');
+}
+function deleteSavedRappel(id){
+  savedRappels=savedRappels.filter(r=>r.id!==id); persistSaved(); renderLibrary();
+}
+function flashHint(msg){
+  let h=document.getElementById('saveFlash');
+  if(!h){h=document.createElement('div');h.id='saveFlash';h.className='status ok';h.style.marginTop='8px';libEl.parentNode.insertBefore(h,libEl);}
+  h.textContent=msg; h.style.display='block';
+  clearTimeout(h._t); h._t=setTimeout(()=>{h.style.display='none';},2500);
+}
+
+function applyRappel(it){
+  S.arTitle=it.ar;S.latinTitle=it.lat;S.body=it.body;S.attr=it.attr;S.source=it.src;S.icon=it.icon;S.photo=null;
+  arTitleEl.value=it.ar;latinTitleEl.value=it.lat;bodyEl.value=it.body;attrEl.value=it.attr;sourceEl.value=it.src;
+  syncIcons();draw();
+}
+function renderLibrary(){
+  libEl.innerHTML='';
+  const preset = activeCat==='Toutes'?library:library.filter(x=>x.cat===activeCat);
+  const mine   = activeCat==='Toutes'?savedRappels:savedRappels.filter(x=>x.cat===activeCat);
+  // preset rappels
+  preset.forEach(it=>{const e=document.createElement('div');e.className='lib-item';
+    e.innerHTML=`<span class="ar">${it.ar}</span><small>${it.lat}</small>`;
+    e.onclick=()=>applyRappel(it);
+    libEl.appendChild(e);});
+  // saved rappels (with delete button)
+  mine.forEach(it=>{const e=document.createElement('div');e.className='lib-item lib-saved';
+    const label=it.ar||it.lat||(it.body?it.body.slice(0,18)+'…':'Rappel');
+    e.innerHTML=`<span class="ar">${it.ar||''}</span><small>${it.lat||it.cat}</small>`;
+    e.onclick=(ev)=>{ if(ev.target.classList.contains('lib-del'))return; applyRappel({ar:it.ar,lat:it.lat,body:it.body,attr:it.attr,src:it.src,icon:it.icon}); };
+    const del=document.createElement('div');del.className='lib-del';del.textContent='×';del.title='Supprimer';
+    del.onclick=(ev)=>{ev.stopPropagation();deleteSavedRappel(it.id);};
+    e.appendChild(del);
+    libEl.appendChild(e);});
+  // empty category -> compose tile
+  if(preset.length===0 && mine.length===0 && activeCat!=='Toutes'){
+    const e=document.createElement('div');e.className='lib-item';e.style.gridColumn='1 / -1';
+    e.innerHTML=`<small style="color:var(--gold-light)">✎ ${activeCat}</small><small>Composer un rappel puis « Enregistrer »</small>`;
+    e.onclick=()=>{
+      S.arTitle='';S.latinTitle=activeCat;S.body='';S.attr='';S.source='';
+      S.icon=CAT_DEFAULT_ICON[activeCat]||'none';S.photo=null;
+      arTitleEl.value='';latinTitleEl.value=activeCat;bodyEl.value='';attrEl.value='';sourceEl.value='';
+      syncIcons();draw();
+    };
+    libEl.appendChild(e);
+  }
+}
+const catEl=document.getElementById('catChips');
+CATEGORIES.forEach((c,i)=>{const x=document.createElement('div');x.className='chip'+(i===0?' active':'');x.textContent=c;
+  x.onclick=()=>{[...catEl.children].forEach(y=>y.classList.remove('active'));x.classList.add('active');activeCat=c;renderLibrary();};
+  catEl.appendChild(x);});
+
+const iconGrid=document.getElementById('iconGrid');
+ICON_KEYS.forEach(k=>{const b=document.createElement('div');b.className='icon-btn'+(k===S.icon?' active':'');b.dataset.icon=k;
+  b.title=ICON_LABEL[k]||k;
+  b.innerHTML=`<svg viewBox="0 0 24 24"><path d="${ICONS[k]}"/></svg><span class="icon-cap">${ICON_LABEL[k]||k}</span>`;
+  b.onclick=()=>{S.icon=k;S.photo=null;syncIcons();draw();};iconGrid.appendChild(b);});
+function syncIcons(){[...iconGrid.children].forEach(b=>b.classList.toggle('active',b.dataset.icon===S.icon&&!S.photo));}
+
+document.getElementById('photoUpload').onchange=e=>{
+  const f=e.target.files[0];if(!f)return;const r=new FileReader();
+  r.onload=()=>{const img=new Image();img.onload=()=>{S.photo=img;syncIcons();draw();};img.src=r.result;};r.readAsDataURL(f);
+};
+
+// format
+const fc=document.getElementById('formatChips');
+[...fc.children].forEach(ch=>ch.onclick=()=>{[...fc.children].forEach(x=>x.classList.remove('active'));ch.classList.add('active');
+  S.w=+ch.dataset.w;S.h=+ch.dataset.h;resizeCanvas();draw();});
+
+// video display
+const vd=document.getElementById('vDisplayChips');
+[...vd.children].forEach(ch=>ch.onclick=()=>{[...vd.children].forEach(x=>x.classList.remove('active'));ch.classList.add('active');S.vDisplay=ch.dataset.v;draw();});
+// video scope
+const vsc=document.getElementById('vScopeChips');
+[...vsc.children].forEach(ch=>ch.onclick=()=>{[...vsc.children].forEach(x=>x.classList.remove('active'));ch.classList.add('active');S.vScope=ch.dataset.s;updateRecLabel();});
+function updateRecLabel(){const b=$('recBtn');if(b&&!recording)b.textContent=S.vScope==='full'?'⬤ Enregistrer la sourate':'⬤ Enregistrer le verset';}
+
+// inputs
+const $=id=>document.getElementById(id);
+const arTitleEl=$('arTitle'),latinTitleEl=$('latinTitle'),bodyEl=$('bodyText'),attrEl=$('attrText'),sourceEl=$('sourceText');
+const bind=(id,k,after)=>{const e=$(id);e.oninput=()=>{S[k]=e.type==='range'?+e.value:e.value;after&&after();draw();};};
+bind('arTitle','arTitle');bind('latinTitle','latinTitle');bind('bodyText','body');
+bind('attrText','attr');bind('sourceText','source');bind('patternOpacity','patternOp');
+bind('titleSize','titleSize');bind('bodySize','bodySize');bind('overlay','overlay');bind('handle','handle');
+
+function randomBg(){S.bg=backgrounds[Math.floor(Math.random()*backgrounds.length)];
+  S.pattern=Math.floor(Math.random()*patterns.length);S.palette=palettes[Math.floor(Math.random()*palettes.length)];
+  [...$('bgChips').children].forEach((x,i)=>x.classList.toggle('active',backgrounds[i]===S.bg));
+  [...$('patternChips').children].forEach((x,i)=>x.classList.toggle('active',i===S.pattern));
+  [...palEl.children].forEach((x,i)=>x.classList.toggle('active',palettes[i]===S.palette));draw();}
+
+/* =================== MODE SWITCH =================== */
+function setMode(m){
+  S.mode=m;
+  [...document.querySelectorAll('.mode-tab')].forEach(t=>t.classList.toggle('active',t.dataset.mode===m));
+  $('imageControls').classList.toggle('section-hidden',m!=='image');
+  $('videoControls').classList.toggle('section-hidden',m!=='video');
+  $('subtitleControls').classList.toggle('section-hidden',m!=='subtitle');
+  $('imageActions').classList.toggle('section-hidden',m!=='image');
+  $('videoActions').classList.toggle('section-hidden',m!=='video');
+  $('subtitleActions').classList.toggle('section-hidden',m!=='subtitle');
+  $('subTimeline').classList.toggle('section-hidden',m!=='subtitle');
+  // In subtitle mode, the look comes from the user's video; hide bg/palette/pattern/frame/text groups
+  const styleGroups=['bgChips','palette','patternChips','frameChips'];
+  document.querySelectorAll('.controls .group').forEach(g=>{
+    const hasStyle=styleGroups.some(id=>g.querySelector('#'+id));
+    if(hasStyle) g.classList.toggle('section-hidden', m==='subtitle');
+  });
+  if(m==='video'){
+    $('footHint').textContent='Mode Vidéo : choisis sourate + récitateur, puis « Enregistrer la vidéo » pour un .mp4 avec le son.';
+    if(!surahLoaded) loadSurahs();
+  } else if(m==='subtitle'){
+    $('footHint').textContent='Mode Sous-titres : importe ta vidéo, ajoute des sous-titres avec leurs temps, puis exporte un .mp4.';
+    if(!subs.length) renderSubList();
+  } else {
+    $('footHint').textContent='Mode Image : grande calligraphie + icône de contexte, façon Al Rissalah. Tout en HD.';
+  }
+  draw();
+}
+
+/* =================== QURAN API =================== */
+let surahLoaded=false, surahMeta=[];
+async function loadSurahs(){
+  // reciters dropdown
+  const rs=$('reciterSelect');rs.innerHTML='';
+  RECITERS.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;rs.appendChild(o);});
+  rs.onchange=()=>{S.reciter=rs.value;loadVerseAudio();};
+  try{
+    const res=await fetch(`${API}/surah`);
+    const j=await res.json();
+    surahMeta=j.data;surahLoaded=true;
+    const sel=$('surahSelect');sel.innerHTML='';
+    surahMeta.forEach(s=>{const o=document.createElement('option');o.value=s.number;
+      o.textContent=`${s.number}. ${s.englishName} — ${s.name} (${s.numberOfAyahs}v)`;sel.appendChild(o);});
+    sel.onchange=()=>loadSurahVerses(+sel.value);
+    $('surahStatus').className='status ok';$('surahStatus').textContent='✓ 114 sourates chargées';
+    loadSurahVerses(1);
+  }catch(e){
+    $('surahStatus').className='status err';
+    $('surahStatus').innerHTML='✕ Impossible de joindre l\u2019API. Vérifie ta connexion Internet puis recharge la page.';
+  }
+}
+// Remove Arabic diacritics (harakat, tatweel) for comparison
+// Removes ONLY the tajweed iqlab meem symbols (small high/low meem) — keeps shadda, vowels, everything else
+function cleanTajweedMeem(s){
+  return s.replace(/[\u06E2\u06ED]/g,'');
+}
+function bareArabic(s){
+  return s.replace(/[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED\u0640]/g,'')
+          .replace(/\u0671/g,'\u0627'); // alif wasla -> alif
+}
+// If text starts with the Basmala, return the remainder (verse without Basmala); else null
+function stripLeadingBasmala(text){
+  const target='بسماللهالرحمنالرحيم'; // bare skeleton, no spaces/diacritics
+  let consumed=0, matched=0;
+  for(let i=0;i<text.length;i++){
+    const ch=text[i];
+    const bare=bareArabic(ch).replace(/\s/g,'');
+    if(bare===''){ // diacritic or space
+      if(matched>0 && matched<=target.length) consumed=i+1; // keep eating trailing marks
+      continue;
+    }
+    if(matched<target.length && bare===target[matched]){ matched++; consumed=i+1; }
+    else { break; } // a real letter that isn't part of Basmala -> stop here
+  }
+  if(matched<target.length) return null; // Basmala not fully present
+  return text.slice(consumed).trim();
+}
+
+async function loadSurahVerses(n){
+  S.surah=n;const meta=surahMeta.find(s=>s.number===n);S.surahName=meta?meta.name:'';
+  $('verseStatus').className='status load';$('verseStatus').innerHTML='<span class="spinner"></span>Chargement des versets…';
+  try{
+    const res=await fetch(`${API}/surah/${n}/editions/${AR_EDITION},${FR_EDITION}`);
+    const j=await res.json();
+    const ar=j.data[0].ayahs, fr=j.data[1].ayahs;
+    S.verses=ar.map((a,i)=>({n:a.numberInSurah,ar:cleanTajweedMeem(a.text),fr:fr[i]?fr[i].text:'',audio:'',global:a.number,isBasmala:false}));
+    // Robustly strip the Basmala that the API prepends to verse 1 (all surahs except Al-Fatiha & At-Tawba)
+    if(n!==1 && n!==9 && S.verses.length){
+      const v1=S.verses[0];
+      const stripped=stripLeadingBasmala(v1.ar);
+      if(stripped!==null) v1.ar=stripped;
+    }
+    // Prepend the Basmala as its own recited+displayed item (every surah except At-Tawba)
+    if(n!==9){
+      const basmalaAr='بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ';
+      const basmalaFr='Au nom d\u2019Allah, le Tout Miséricordieux, le Très Miséricordieux.';
+      // Basmala audio = global ayah 1 (Al-Fatiha v1) for everyayah/cdn — reciters recite it identically
+      S.verses.unshift({n:0,ar:basmalaAr,fr:basmalaFr,audio:'',global:1,isBasmala:true});
+    }
+    S.verseIdx=0;
+    const vs=$('verseSelect');vs.innerHTML='';
+    S.verses.forEach((v,i)=>{const o=document.createElement('option');o.value=i;
+      o.textContent=v.isBasmala?"Basmala":`Verset ${v.n}`;vs.appendChild(o);});
+    vs.onchange=()=>{S.verseIdx=+vs.value;loadVerseAudio();updateVerseUI();draw();};
+    $('verseStatus').className='status ok';$('verseStatus').textContent=`✓ ${S.verses.length} versets`;
+    updateVerseUI();loadVerseAudio();draw();
+  }catch(e){
+    $('verseStatus').className='status err';$('verseStatus').textContent='✕ Erreur de chargement des versets.';
+  }
+}
+function updateVerseUI(){
+  const v=S.verses[S.verseIdx];if(!v)return;
+  $('verseInfo').textContent=v.isBasmala?`${S.surahName} · Basmala`:`${S.surahName} · verset ${v.n} / ${S.verses.length}`;
+  $('verseSelect').value=S.verseIdx;
+}
+function changeVerse(d){
+  if(!S.verses.length)return;
+  S.verseIdx=Math.max(0,Math.min(S.verses.length-1,S.verseIdx+d));
+  updateVerseUI();loadVerseAudio();draw();
+}
+function loadVerseAudio(){
+  const v=S.verses[S.verseIdx];if(!v)return;
+  const url=audioUrl(S.reciter, v.isBasmala?1:S.surah, v.isBasmala?1:v.n, v.global);
+  v.audio=url;
+  const a=$('previewAudio');a.src=url;a.load();
+}
+
+/* =================== CANVAS =================== */
+const cv=$('card'),ctx=cv.getContext('2d');
+function resizeCanvas(){cv.width=S.w;cv.height=S.h;
+  const isMobile=window.innerWidth<=980;
+  const ratio=S.w/S.h;
+  if(isMobile){
+    // fit within available width and ~40vh height
+    const maxW=window.innerWidth*0.9;
+    const maxH=window.innerHeight*0.40;
+    let dw=maxW, dh=dw/ratio;
+    if(dh>maxH){ dh=maxH; dw=dh*ratio; }
+    cv.style.width=dw+'px'; cv.style.height=dh+'px';
+  } else {
+    let dh=Math.min(window.innerHeight-280,720),dw=dh*ratio;
+    if(dw>500){dw=500;dh=dw/ratio;}
+    cv.style.width=dw+'px'; cv.style.height=dh+'px';
+  }}
+
+function draw(t=0){
+  if(S.mode==='subtitle'){ drawSubFrame(); return; }
+  const W=S.w,H=S.h,light=S.bg.light;
+  const g=ctx.createLinearGradient(0,0,W*.3,H);S.bg.stops.forEach(s=>g.addColorStop(s[1],s[0]));
+  ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+  if(S.bg.glow){const rg=ctx.createRadialGradient(W*.7,H*.3,0,W*.7,H*.3,W*.8);
+    rg.addColorStop(0,'rgba(201,162,39,.18)');rg.addColorStop(1,'rgba(201,162,39,0)');ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);}
+  drawPattern(W,H,light);
+  if(S.overlay>0){ctx.fillStyle=`rgba(2,13,10,${S.overlay/100})`;ctx.fillRect(0,0,W,H);}
+  const vg=ctx.createRadialGradient(W/2,H/2,H*.25,W/2,H/2,H*.78);
+  vg.addColorStop(0,'rgba(0,0,0,0)');vg.addColorStop(1,(light?'rgba(120,100,40,':'rgba(0,0,0,')+(S.bg.vignette??.3)+')');
+  ctx.fillStyle=vg;ctx.fillRect(0,0,W,H);
+  drawFrame(W,H);
+  if(S.mode==='image') drawImageContent(W,H,light,t); else drawVideoContent(W,H,light,t);
+  drawHandle(W,H,light);
+}
+function txtColor(light,strong){return light?(strong?'#1a1208':'#3a3020'):(strong?'#f7f3e8':'rgba(247,243,232,.88)');}
+
+function drawPattern(W,H,light){
+  if(S.pattern===0)return;ctx.save();ctx.globalAlpha=S.patternOp/100*(light?.5:.45);
+  ctx.strokeStyle=S.palette.gold;ctx.fillStyle=S.palette.gold;ctx.lineWidth=2;const step=W/8;
+  if(S.pattern===1){for(let x=step/2;x<W;x+=step)for(let y=step/2;y<H;y+=step)star(x,y,step*.26,8);}
+  else if(S.pattern===2){ctx.lineWidth=1.5;for(let y=0;y<H;y+=60){ctx.beginPath();for(let x=0;x<=W;x+=10){const yy=y+Math.sin(x/40)*14;x===0?ctx.moveTo(x,yy):ctx.lineTo(x,yy);}ctx.stroke();}}
+  else if(S.pattern===3){for(let x=0;x<=W;x+=step){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}for(let y=0;y<=H;y+=step){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}}
+  else if(S.pattern===4){const d=step*.7;for(let x=-d;x<W+d;x+=d)for(let y=-d;y<H+d;y+=d){ctx.beginPath();ctx.moveTo(x,y+d/2);ctx.lineTo(x+d/2,y);ctx.lineTo(x+d,y+d/2);ctx.lineTo(x+d/2,y+d);ctx.closePath();ctx.stroke();}}
+  ctx.restore();
+}
+function star(cx,cy,r,p){ctx.beginPath();for(let i=0;i<p*2;i++){const rad=i%2?r*.45:r,a=Math.PI/p*i;ctx.lineTo(cx+Math.cos(a)*rad,cy+Math.sin(a)*rad);}ctx.closePath();ctx.stroke();}
+
+function drawFrame(W,H){
+  if(S.frame===0)return;const m=W*.055;ctx.save();ctx.strokeStyle=S.palette.gold;
+  if(S.frame===1){ctx.lineWidth=3;ctx.strokeRect(m,m,W-2*m,H-2*m);}
+  else if(S.frame===2){ctx.lineWidth=3;ctx.strokeRect(m,m,W-2*m,H-2*m);ctx.lineWidth=1.5;ctx.strokeRect(m+14,m+14,W-2*m-28,H-2*m-28);}
+  else if(S.frame===3){ctx.lineWidth=3;ctx.beginPath();const ax=m,ay=H-m,aw=W-2*m;ctx.moveTo(ax,ay);ctx.lineTo(ax,m+aw*.4);ctx.quadraticCurveTo(ax,m,ax+aw/2,m);ctx.quadraticCurveTo(ax+aw,m,ax+aw,m+aw*.4);ctx.lineTo(ax+aw,ay);ctx.closePath();ctx.stroke();}
+  else if(S.frame===4){ctx.lineWidth=3;const c=W*.1;[[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]].forEach(([x,y,sx,sy])=>{ctx.beginPath();ctx.moveTo(x,y+sy*c);ctx.lineTo(x,y);ctx.lineTo(x+sx*c,y);ctx.stroke();ctx.beginPath();ctx.arc(x+sx*16,y+sy*16,5,0,7);ctx.fillStyle=S.palette.gold;ctx.fill();});}
+  else if(S.frame===5){ctx.fillStyle='rgba(201,162,39,.15)';ctx.fillRect(0,H-H*.15,W,H*.15);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,H-H*.15);ctx.lineTo(W,H-H*.15);ctx.stroke();}
+  ctx.restore();
+}
+
+function wrap(text,maxW,font){ctx.font=font;const words=text.split(' ');let line='',lines=[];
+  words.forEach(w=>{const tt=line?line+' '+w:w;if(ctx.measureText(tt).width>maxW&&line){lines.push(line);line=w;}else line=tt;});
+  if(line)lines.push(line);return lines;}
+
+function drawContextIcon(W,cy,size,light){
+  ctx.save();ctx.translate(W/2,cy);
+  if(S.photo){
+    const s=size*2.2;ctx.save();ctx.beginPath();ctx.arc(0,0,s/2,0,7);ctx.closePath();ctx.clip();
+    const ratio=Math.max(s/S.photo.width,s/S.photo.height);
+    ctx.drawImage(S.photo,-S.photo.width*ratio/2,-S.photo.height*ratio/2,S.photo.width*ratio,S.photo.height*ratio);ctx.restore();
+    ctx.strokeStyle=S.palette.gold;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,s/2,0,7);ctx.stroke();
+  } else if(S.icon&&ICONS[S.icon]){
+    const sc=size/24*2.2;ctx.scale(sc,sc);ctx.translate(-12,-12);
+    const grd=ctx.createLinearGradient(0,0,0,24);grd.addColorStop(0,S.palette.light);grd.addColorStop(1,S.palette.gold);
+    ctx.strokeStyle=grd;ctx.lineWidth=1.5;ctx.lineCap='round';ctx.lineJoin='round';
+    ctx.shadowColor='rgba(0,0,0,.2)';ctx.shadowBlur=4;
+    ctx.stroke(new Path2D(ICONS[S.icon]));
+  }
+  ctx.restore();
+}
+
+/* ----- IMAGE LAYOUT (Al Rissalah style) ----- */
+function drawImageContent(W,H,light,t){
+  ctx.textAlign='center';
+  // Safe zone inside the frame
+  const margin = (S.frame!==0 ? W*0.055 : 0) + W*0.04;
+  const safeTop = margin, safeBottom = H - margin;
+  const safeH = safeBottom - safeTop;
+  const contentW = (W - 2*margin) * 0.94;
+
+  // --- Build the block as a list of measured elements ---
+  const iconSize = W*0.06;            // base icon radius-ish
+  const iconBlockH = iconSize*2.2*1.05;
+  // scale factors we can shrink if needed
+  let f = 1; // global scale
+  // helper to (re)build measurements for a given scale
+  function build(scale){
+    const els=[];
+    const ts=S.titleSize*scale, bs=S.bodySize*scale;
+    const hasIcon = S.photo || (S.icon && ICONS[S.icon]);
+    if(hasIcon) els.push({type:'icon',h:iconBlockH*scale, gapAfter:34*scale});
+    if(S.arTitle){ ctx.font=`${ts}px "${S.calliFont.css}"`; els.push({type:'title',size:ts,h:ts*0.78, gapAfter:24*scale}); }
+    if(S.latinTitle){ const fs=32*scale; ctx.font=`italic ${fs}px "Cormorant Garamond"`;
+      els.push({type:'latin',size:fs,h:fs, gapAfter:24*scale}); }
+    if(S.attr){ const fs=31*scale; const lines=wrap(S.attr,contentW,`500 ${fs}px "Cormorant Garamond"`);
+      els.push({type:'attr',size:fs,lines,h:lines.length*(fs*1.3), gapAfter:22*scale}); }
+    els.push({type:'divider',h:14*scale, gapAfter:28*scale});
+    if(S.body){ const lines=wrap(S.body,contentW,`${bs}px "EB Garamond"`);
+      els.push({type:'body',size:bs,lines,h:lines.length*(bs*1.42), gapAfter:26*scale}); }
+    if(S.source){ const fs=26*scale; els.push({type:'source',size:fs,h:fs, gapAfter:0}); }
+    let total=0; els.forEach((e,i)=>{ total+=e.h + (i<els.length-1?e.gapAfter:0); });
+    return {els,total};
+  }
+  // shrink scale until it fits the safe height (min 0.55)
+  let built=build(f);
+  while(built.total>safeH && f>0.55){ f-=0.04; built=build(f); }
+
+  // start so the whole block is vertically centered in the safe zone
+  let cy = safeTop + Math.max(0,(safeH-built.total)/2);
+
+  for(let i=0;i<built.els.length;i++){
+    const e=built.els[i];
+    if(e.type==='icon'){
+      drawContextIcon(W, cy + e.h/2, iconSize*f, light);
+    }
+    else if(e.type==='title'){
+      ctx.save();ctx.shadowColor='rgba(0,0,0,.15)';ctx.shadowBlur=light?6:18;ctx.shadowOffsetY=3;
+      const yb=cy+e.h; // baseline near bottom of its box
+      const grad=ctx.createLinearGradient(0,yb-e.size,0,yb);
+      grad.addColorStop(0,S.palette.light);grad.addColorStop(1,S.palette.gold);
+      ctx.fillStyle=grad;ctx.font=`${e.size}px "${S.calliFont.css}"`;
+      ctx.direction='rtl';ctx.textAlign='center';
+      ctx.fillText(S.arTitle,W/2,yb);
+      ctx.direction='ltr';ctx.textAlign='center';ctx.restore();
+    }
+    else if(e.type==='latin'){
+      ctx.fillStyle=txtColor(light,false);ctx.font=`italic ${e.size}px "Cormorant Garamond"`;
+      ctx.fillText(S.latinTitle,W/2,cy+e.size*0.85);
+    }
+    else if(e.type==='attr'){
+      ctx.fillStyle=txtColor(light,true);ctx.font=`500 ${e.size}px "Cormorant Garamond"`;
+      e.lines.forEach((l,k)=>ctx.fillText(l,W/2,cy+e.size*0.85+k*(e.size*1.3)));
+    }
+    else if(e.type==='divider'){
+      const my=cy+e.h/2;
+      ctx.strokeStyle=S.palette.gold;ctx.lineWidth=2;ctx.globalAlpha=.6;
+      ctx.beginPath();ctx.moveTo(W/2-50,my);ctx.lineTo(W/2+50,my);ctx.stroke();
+      ctx.fillStyle=S.palette.gold;ctx.save();ctx.translate(W/2,my);ctx.rotate(Math.PI/4);ctx.fillRect(-5,-5,10,10);ctx.restore();ctx.globalAlpha=1;
+    }
+    else if(e.type==='body'){
+      ctx.fillStyle=txtColor(light,true);ctx.font=`${e.size}px "EB Garamond"`;
+      if(!light){ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=10;}
+      e.lines.forEach((l,k)=>ctx.fillText(l,W/2,cy+e.size+k*(e.size*1.42)));ctx.shadowBlur=0;
+    }
+    else if(e.type==='source'){
+      ctx.fillStyle=S.palette.gold;ctx.font=`500 ${e.size}px "Jost"`;
+      ctx.fillText('— '+S.source+' —',W/2,cy+e.size*0.85);
+    }
+    cy += e.h + e.gapAfter;
+  }
+}
+
+/* ----- VIDEO LAYOUT ----- */
+function drawVideoContent(W,H,light,t){
+  ctx.textAlign='center';
+  if(!S.verses.length){
+    ctx.fillStyle=txtColor(light,false);ctx.font='28px "Cormorant Garamond"';
+    ctx.fillText('Choisis une sourate dans le panneau de gauche.',W/2,H/2);return;
+  }
+  ctx.save();
+  ctx.globalAlpha=Math.max(0,Math.min(1,S.fade));
+  const v=S.verses[S.verseIdx];
+  const pulse=1+Math.sin(t/700)*0.012;
+  const rec=RECITERS.find(r=>r.id===S.reciter);
+
+  // safe zone inside frame
+  const margin=(S.frame!==0?W*0.055:0)+W*0.04;
+  const safeTop=margin, safeH=(H-margin)-safeTop;
+  const contentW=(W-2*margin)*0.92;
+
+  // measure at scale f, shrink to fit
+  function build(f){
+    const els=[];
+    const arSize=Math.min(S.titleSize*0.8,68)*f;
+    const bs=S.bodySize*f;
+    if(S.vDisplay!=='fr'){
+      ctx.font=`${arSize}px "Amiri"`;
+      const lines=wrapArabic(v.ar,contentW,`${arSize}px "Amiri"`);
+      els.push({type:'ar',size:arSize,lines,h:lines.length*(arSize*1.85),gapAfter:30*f});
+    }
+    if(S.vDisplay!=='ar'){
+      els.push({type:'divider',h:2,gapAfter:30*f});
+      ctx.font=`${bs}px "EB Garamond"`;
+      const lines=wrap(v.fr,contentW,`${bs}px "EB Garamond"`);
+      els.push({type:'fr',size:bs,lines,h:lines.length*(bs*1.4),gapAfter:24*f});
+    }
+    const srcSize=26*f;
+    els.push({type:'source',size:srcSize,h:srcSize,gapAfter:rec?16*f:0});
+    if(rec) els.push({type:'reciter',size:24*f,h:24*f,gapAfter:0});
+    let total=0;els.forEach((e,i)=>total+=e.h+(i<els.length-1?e.gapAfter:0));
+    return {els,total};
+  }
+  let f=1, built=build(f);
+  while(built.total>safeH && f>0.5){ f-=0.04; built=build(f); }
+
+  let cy=safeTop+Math.max(0,(safeH-built.total)/2);
+  const fa=Math.max(0,Math.min(1,S.fade));
+
+  for(const e of built.els){
+    if(e.type==='ar'){
+      ctx.save();ctx.translate(W/2,cy+e.size);ctx.scale(pulse,pulse);
+      ctx.shadowColor=light?'rgba(0,0,0,.12)':'rgba(0,0,0,.5)';ctx.shadowBlur=light?6:16;
+      const grad=ctx.createLinearGradient(0,-e.size,0,e.size);grad.addColorStop(0,S.palette.light);grad.addColorStop(1,S.palette.gold);
+      ctx.fillStyle=light?'#0c4a38':grad;
+      ctx.font=`${e.size}px "Amiri"`;ctx.direction='rtl';ctx.textAlign='center';
+      e.lines.forEach((l,i)=>ctx.fillText(l,0,i*(e.size*1.85)));
+      ctx.direction='ltr';ctx.textAlign='center';ctx.restore();
+    }
+    else if(e.type==='divider'){
+      const my=cy+e.h/2;
+      ctx.strokeStyle=S.palette.gold;ctx.lineWidth=2;ctx.globalAlpha=.5*fa;
+      ctx.beginPath();ctx.moveTo(W/2-44,my);ctx.lineTo(W/2+44,my);ctx.stroke();ctx.globalAlpha=fa;
+    }
+    else if(e.type==='fr'){
+      ctx.fillStyle=txtColor(light,true);ctx.font=`${e.size}px "EB Garamond"`;
+      if(!light){ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=10;}
+      e.lines.forEach((l,i)=>ctx.fillText(l,W/2,cy+e.size+i*(e.size*1.4)));ctx.shadowBlur=0;
+    }
+    else if(e.type==='source'){
+      ctx.fillStyle=S.palette.gold;ctx.font=`500 ${e.size}px "Jost"`;
+      ctx.fillText(v.isBasmala?`— Sourate ${S.surahName} —`:`— Sourate ${S.surahName} · verset ${v.n} —`,W/2,cy+e.size*0.85);
+    }
+    else if(e.type==='reciter'){
+      ctx.fillStyle=txtColor(light,false);ctx.font=`italic ${e.size}px "Cormorant Garamond"`;
+      ctx.fillText(`récité par ${rec.name}`,W/2,cy+e.size*0.85);
+    }
+    cy+=e.h+e.gapAfter;
+  }
+  ctx.restore();
+}
+function wrapArabic(text,maxW,font){ctx.font=font;const words=text.split(' ');let line='',lines=[];
+  words.forEach(w=>{const tt=line?line+' '+w:w;if(ctx.measureText(tt).width>maxW&&line){lines.push(line);line=w;}else line=tt;});
+  if(line)lines.push(line);return lines;}
+
+function drawHandle(W,H,light){if(!S.handle)return;ctx.textAlign='center';
+  ctx.fillStyle=light?'rgba(60,48,20,.55)':'rgba(247,243,232,.5)';ctx.font='400 24px "Jost"';
+  ctx.fillText(S.handle,W/2,H-W*.055-(S.frame===5?H*.05:28));}
+
+/* =================== DOWNLOAD IMAGE =================== */
+function downloadImage(scale){draw();const tmp=document.createElement('canvas');
+  tmp.width=S.w*scale;tmp.height=S.h*scale;tmp.getContext('2d').drawImage(cv,0,0,tmp.width,tmp.height);
+  const a=document.createElement('a');a.download=`noor-${S.w}x${S.h}${scale>1?'-HD':''}.png`;a.href=tmp.toDataURL('image/png');a.click();}
+
+/* =================== VIDEO RECORD =================== */
+let recording=false,animId=null,mediaRec=null,chunks=[],recAudio=null,recAC=null,recStart=0,verseTimer=null,advanced=false,recRealMp4=false;
+function playPreview(){
+  const s=performance.now();cancelAnimationFrame(animId);
+  function loop(now){draw(now-s);animId=requestAnimationFrame(loop);}
+  animId=requestAnimationFrame(loop);
+  setTimeout(()=>cancelAnimationFrame(animId),6000);
+}
+async function toggleRecord(){
+  if(recording){stopRecord(true);return;}
+  if(!S.verses.length){$('recStatus').textContent='Choisis d\u2019abord une sourate.';return;}
+  recording=true;$('recBtn').textContent='\u25A0 Arr\u00EAter';
+  const playlist = S.vScope==='full' ? S.verses.map((v,i)=>i) : [S.verseIdx];
+  $('recStatus').innerHTML='<span class="spinner"></span>Pr\u00E9paration de l\u2019audio\u2026';
+
+  recAudio=new Audio();recAudio.crossOrigin='anonymous';recAudio.preload='auto';
+  let audioStream=null;
+  try{
+    recAC=new (window.AudioContext||window.webkitAudioContext)();
+    if(recAC.state==='suspended') await recAC.resume();
+    const srcNode=recAC.createMediaElementSource(recAudio);
+    const dest=recAC.createMediaStreamDestination();
+    srcNode.connect(dest);srcNode.connect(recAC.destination);
+    audioStream=dest.stream;
+  }catch(e){console.warn('audio ctx fail',e);}
+
+  const canvasStream=cv.captureStream(30);
+  const tracks=[...canvasStream.getVideoTracks()];
+  if(audioStream) tracks.push(...audioStream.getAudioTracks());
+  const mixed=new MediaStream(tracks);
+  chunks=[];
+  // Try real MP4 first (Safari + recent Chrome), else fall back to WebM
+  let mime, realMp4=false;
+  const mp4Candidates=['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4;codecs=h264,aac','video/mp4'];
+  for(const c of mp4Candidates){ if(MediaRecorder.isTypeSupported(c)){ mime=c; realMp4=true; break; } }
+  if(!mime){
+    mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
+  }
+  recRealMp4=realMp4;
+  mediaRec=new MediaRecorder(mixed,{mimeType:mime,videoBitsPerSecond:6000000});
+  mediaRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  mediaRec.onstop=()=>{
+    if(recAC){try{recAC.close();}catch(e){}recAC=null;}
+    if(!chunks.length){$('recStatus').className='hint';$('recStatus').textContent='\u2715 Aucune donn\u00E9e enregistr\u00E9e. R\u00E9essaie.';return;}
+    // Always deliver with .mp4 extension. Real mp4 if supported, otherwise webm bytes renamed.
+    const blobType = recRealMp4 ? 'video/mp4' : 'video/webm';
+    const blob=new Blob(chunks,{type:blobType});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    const tag = S.vScope==='full' ? 'complete' : ('v'+S.verses[S.verseIdx].n);
+    a.download=`noor-${S.surahName.replace(/[^\w]/g,'')||'sourate'}-${tag}.mp4`;a.href=url;a.click();
+    $('recStatus').className='hint';
+    $('recStatus').innerHTML = recRealMp4
+      ? '\u2713 Vid\u00E9o .mp4 t\u00E9l\u00E9charg\u00E9e. Pr\u00EAte pour Instagram.'
+      : '\u2713 Vid\u00E9o t\u00E9l\u00E9charg\u00E9e en .mp4. Si Instagram la refuse, ouvre-la dans un convertisseur (ton navigateur a produit du WebM sous l\u2019extension .mp4).';
+  };
+
+  recStart=performance.now();
+  function loop(now){draw(now-recStart);if(recording)animId=requestAnimationFrame(loop);}
+
+  let pos=0;
+  function clearVerseTimer(){ if(verseTimer){clearTimeout(verseTimer);verseTimer=null;} }
+  function advance(){           // move to next verse exactly once per verse
+    if(!recording||advanced) return;
+    advanced=true; clearVerseTimer();
+    pos++;
+    fadeOutThen(()=>{ advanced=false; playVerse(); });
+  }
+  function fadeIn(){
+    S.fade=0;
+    const t0=performance.now();
+    (function step(){
+      const e=(performance.now()-t0)/350; // 350ms fade-in
+      S.fade=Math.min(1,e);
+      if(S.fade<1 && recording) requestAnimationFrame(step);
+    })();
+  }
+  function fadeOutThen(cb){
+    const t0=performance.now();
+    (function step(){
+      const e=(performance.now()-t0)/250; // 250ms fade-out
+      S.fade=Math.max(0,1-e);
+      if(S.fade>0 && recording) requestAnimationFrame(step); else cb();
+    })();
+  }
+  function playVerse(){
+    if(!recording) return;
+    if(pos>=playlist.length){ finishRecording(); return; }
+    S.verseIdx=playlist[pos]; updateVerseUI();
+    const v=S.verses[S.verseIdx];
+    advanced=false;
+    fadeIn(); // new verse fades in
+    recAudio.src=audioUrl(S.reciter, v.isBasmala?1:S.surah, v.isBasmala?1:v.n, v.global);
+    recAudio.load();
+    $('recStatus').innerHTML=`<span class="spinner"></span>Enregistrement\u2026 verset ${pos+1}/${playlist.length}`;
+    // start playback when ready; fallback hard-timeout in case events misfire
+    const tryPlay=()=>{ recAudio.play().catch(()=>{}); };
+    recAudio.oncanplay=tryPlay;
+    // safety: if metadata loads, schedule a timeout = duration + 1.5s buffer
+    recAudio.onloadedmetadata=()=>{
+      clearVerseTimer();
+      const dur=isFinite(recAudio.duration)&&recAudio.duration>0?recAudio.duration:8;
+      verseTimer=setTimeout(advance,(dur+1.5)*1000);
+    };
+    // hard cap: no verse should take more than 30s
+    clearVerseTimer();
+    verseTimer=setTimeout(advance,30000);
+    tryPlay();
+  }
+  recAudio.onended=advance;          // normal path
+  recAudio.onerror=()=>{ advance(); }; // skip missing audio
+
+  recAudio.oncanplaythrough=()=>{
+    if(mediaRec.state==='inactive'){ mediaRec.start(); animId=requestAnimationFrame(loop); }
+  };
+  // ensure recorder starts even if canplaythrough is slow
+  setTimeout(()=>{ if(recording&&mediaRec.state==='inactive'){ mediaRec.start(); animId=requestAnimationFrame(loop);} },1500);
+
+  playVerse();
+}
+function finishRecording(){
+  if(!recording)return;recording=false;cancelAnimationFrame(animId);S.fade=1;
+  if(verseTimer){clearTimeout(verseTimer);verseTimer=null;}
+  updateRecLabel();
+  try{if(recAudio){recAudio.onended=null;recAudio.onerror=null;recAudio.oncanplay=null;recAudio.pause();}}catch(e){}
+  // small delay to flush last frames, then stop
+  setTimeout(()=>{try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}},400);
+}
+function stopRecord(userAbort){
+  if(!recording){ // even if flag cleared, force-stop recorder
+    try{if(mediaRec&&mediaRec.state!=='inactive')mediaRec.stop();}catch(e){}
+    return;
+  }
+  recording=false;cancelAnimationFrame(animId);S.fade=1;
+  if(verseTimer){clearTimeout(verseTimer);verseTimer=null;}
+  updateRecLabel();
+  try{if(recAudio){recAudio.onended=null;recAudio.onerror=null;recAudio.oncanplay=null;recAudio.pause();}}catch(e){}
+  try{if(mediaRec&&mediaRec.state!=='inactive')setTimeout(()=>{try{mediaRec.stop();}catch(e){}},300);}catch(e){}
+  if(userAbort){$('recStatus').className='hint';$('recStatus').textContent='Enregistrement arr\u00EAt\u00E9. Le fichier va se t\u00E9l\u00E9charger.';}
+}
+
+/* =================== SUBTITLE MODE =================== */
+let srcVideoEl=$('srcVideo'), videoReady=false;
+let subs=[]; // {text, start, end, id}
+let subStyle='card', subPlaying=false, subRAF=null;
+let subSize=40, subPos=78;
+
+function fmtTime(s){ if(!isFinite(s))return '0:00'; const m=Math.floor(s/60),x=Math.floor(s%60); return m+':'+String(x).padStart(2,'0'); }
+
+$('videoUpload').onchange=e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const url=URL.createObjectURL(f);
+  srcVideoEl.src=url; srcVideoEl.load();
+  srcVideoEl.onloadedmetadata=()=>{
+    videoReady=true;
+    S.w=srcVideoEl.videoWidth; S.h=srcVideoEl.videoHeight;
+    resizeCanvas();
+    $('videoStatus').className='hint';
+    $('videoStatus').textContent=`✓ Vidéo chargée (${srcVideoEl.videoWidth}×${srcVideoEl.videoHeight}, ${fmtTime(srcVideoEl.duration)})`;
+    $('subDurTime').textContent=fmtTime(srcVideoEl.duration);
+    $('subScrub').value=0;$('subCurTime').textContent='0:00';
+    drawSubFrame();
+  };
+};
+
+// scrubber -> seek video
+$('subScrub').oninput=()=>{
+  if(!videoReady||!isFinite(srcVideoEl.duration))return;
+  const t=(+$('subScrub').value/1000)*srcVideoEl.duration;
+  srcVideoEl.currentTime=t;
+  $('subCurTime').textContent=fmtTime(t);
+  drawSubFrame();
+};
+// keep scrubber + time in sync during playback
+srcVideoEl.ontimeupdate=()=>{
+  if(!isFinite(srcVideoEl.duration))return;
+  $('subScrub').value=Math.round(srcVideoEl.currentTime/srcVideoEl.duration*1000);
+  $('subCurTime').textContent=fmtTime(srcVideoEl.currentTime);
+};
+
+$('subSize').oninput=()=>{subSize=+$('subSize').value;drawSubFrame();};
+$('subPos').oninput=()=>{subPos=+$('subPos').value;drawSubFrame();};
+const ssc=document.getElementById('subStyleChips');
+[...ssc.children].forEach(ch=>ch.onclick=()=>{[...ssc.children].forEach(x=>x.classList.remove('active'));ch.classList.add('active');subStyle=ch.dataset.s;drawSubFrame();});
+
+// Build subs from the bulk text (one line = one subtitle)
+function subsFromBulk(){
+  const lines=$('subBulk').value.split('\n').map(l=>l.trim()).filter(l=>l);
+  // preserve existing timings if line count matches
+  const old=subs.slice();
+  subs=lines.map((text,i)=>({text, start:old[i]?old[i].start:0, end:old[i]?old[i].end:0, id:(old[i]?old[i].id:Date.now()+i+Math.random())}));
+  return subs;
+}
+$('subBulk').oninput=()=>{ subsFromBulk(); renderSubList(); drawSubFrame(); };
+
+/* ---- Live cue: tap to set timings while the video plays ---- */
+let liveCue=false, cueIndex=-1, cueRAF=null, cueSpeed=1;
+const csc=document.getElementById('cueSpeedChips');
+[...csc.children].forEach(ch=>ch.onclick=()=>{
+  [...csc.children].forEach(x=>x.classList.remove('active'));ch.classList.add('active');
+  cueSpeed=parseFloat(ch.dataset.r);
+  if(liveCue) srcVideoEl.playbackRate=cueSpeed; // change à la volée
+});
+function toggleLiveCue(){
+  if(liveCue){ cueNext(); return; } // already running -> advance
+  if(!videoReady){ $('liveCueStatus').textContent='Importe d\u2019abord une vidéo.'; return; }
+  subsFromBulk();
+  if(!subs.length){ $('liveCueStatus').textContent='Écris d\u2019abord tes sous-titres ci-dessus.'; return; }
+  liveCue=true; cueIndex=-1;
+  subs.forEach(s=>{s.start=0;s.end=0;});
+  srcVideoEl.currentTime=0;
+  srcVideoEl.playbackRate=cueSpeed; // ralenti pour caler à l'oreille
+  $('liveCueBtn').textContent='⏭ Suivant (ou Espace)';
+  const spd=cueSpeed<1?` (lecture ${String(cueSpeed).replace('.',',')}×)`:'';
+  $('liveCueStatus').innerHTML=`La vidéo joue${spd}. Clique « Suivant » à chaque pause / apparition.`;
+  srcVideoEl.play();
+  cueNext();
+  (function loop(){ drawSubFrame(); if(liveCue && !srcVideoEl.ended) cueRAF=requestAnimationFrame(loop);
+    else if(srcVideoEl.ended) finishLiveCue(); })();
+}
+function cueNext(){
+  if(!liveCue) return;
+  const t=srcVideoEl.currentTime;
+  // close previous subtitle at current time
+  if(cueIndex>=0 && cueIndex<subs.length){ subs[cueIndex].end=+t.toFixed(2); }
+  cueIndex++;
+  if(cueIndex>=subs.length){ finishLiveCue(); return; }
+  subs[cueIndex].start=+t.toFixed(2);
+  // temporary end (will be closed by next tap or video end)
+  subs[cueIndex].end=srcVideoEl.duration||t+99;
+  $('liveCueStatus').innerHTML=`Sous-titre ${cueIndex+1}/${subs.length} affiché. Clique « Suivant » pour le suivant…`;
+  renderSubList();
+}
+function finishLiveCue(){
+  if(cueIndex>=0 && cueIndex<subs.length && subs[cueIndex].end>srcVideoEl.duration){
+    subs[cueIndex].end=+(srcVideoEl.currentTime||srcVideoEl.duration).toFixed(2);
+  }
+  stopLiveCue(true);
+}
+function stopLiveCue(done){
+  liveCue=false; cancelAnimationFrame(cueRAF);
+  try{srcVideoEl.pause();srcVideoEl.playbackRate=1;}catch(e){}
+  $('liveCueBtn').textContent='▶ Démarrer le calage en direct';
+  $('liveCueStatus').innerHTML=done?'✓ Calage terminé. Vérifie l\u2019aperçu et réajuste si besoin.':'Calage arrêté.';
+  renderSubList(); drawSubFrame();
+}
+// Space bar = next cue during live cueing
+document.addEventListener('keydown',e=>{
+  if(S.mode==='subtitle' && liveCue && e.code==='Space'){ e.preventDefault(); cueNext(); }
+});
+
+function delSub(id){ subs=subs.filter(s=>s.id!==id);
+  // reflect back into bulk text
+  $('subBulk').value=subs.map(s=>s.text).join('\n');
+  renderSubList(); drawSubFrame(); }
+function renderSubList(){
+  const c=$('subList'); c.innerHTML='';
+  if(!subs.length){ c.innerHTML='<div class="hint">Écris tes sous-titres ci-dessus, puis cale-les en direct.</div>'; return; }
+  subs.forEach((s,i)=>{
+    const row=document.createElement('div'); row.className='sub-row';
+    row.innerHTML=`
+      <div style="font-size:13px;color:var(--gold-light);margin-bottom:5px">${i+1}. ${s.text||'(vide)'}</div>
+      <div class="sub-times">
+        <span class="lbl">début</span><input type="number" step="0.1" value="${(+s.start).toFixed(1)}" data-f="start">
+        <span class="lbl">fin</span><input type="number" step="0.1" value="${(+s.end).toFixed(1)}" data-f="end">
+        <button data-seek="start">↦</button>
+      </div>`;
+    row.querySelectorAll('input').forEach(inp=>{
+      inp.oninput=()=>{s[inp.dataset.f]=parseFloat(inp.value)||0;drawSubFrame();};
+    });
+    row.querySelector('button[data-seek]').onclick=()=>{ srcVideoEl.currentTime=s.start; drawSubFrame(); };
+    c.appendChild(row);
+  });
+}
+
+// returns {text, alpha} with fade in/out near the edges (0.35s)
+function currentSub(t){
+  const FADE=0.35;
+  for(const s of subs){
+    if(!s.text.trim()) continue;
+    if(t>=s.start && t<s.end){
+      let a=1;
+      const inT=t-s.start, outT=s.end-t;
+      if(inT<FADE) a=inT/FADE;
+      else if(outT<FADE) a=Math.max(0,outT/FADE);
+      return {text:s.text, alpha:Math.max(0,Math.min(1,a))};
+    }
+  }
+  return null;
+}
+function drawSubtitleOverlay(W,H,t){
+  const cur=currentSub(t);
+  if(!cur) return;
+  ctx.textAlign='center';
+  ctx.save();
+  ctx.globalAlpha=cur.alpha; // fondu
+  const size=subSize*(W/1080);
+  const font=`${size}px "Cormorant Garamond"`;
+  const lines=wrap(cur.text,W*0.82,font);
+  const lh=size*1.4;
+  const blockH=lines.length*lh;
+  const yCenter=H*(subPos/100);
+  const GOLD='#c9a227', GOLD_L='#e8d59a', EMERALD='#06352a';
+  if(subStyle==='card'){
+    const padX=W*0.045, padY=size*0.7;
+    ctx.font=font;
+    const boxW=Math.min(W*0.92, Math.max(...lines.map(l=>ctx.measureText(l).width))+padX*2);
+    const boxH=blockH+padY*1.4;
+    const bx=(W-boxW)/2, by=yCenter-boxH/2;
+    // emerald translucent card with gold border
+    ctx.fillStyle='rgba(6,53,42,.82)';
+    roundRect(bx,by,boxW,boxH,18); ctx.fill();
+    ctx.lineWidth=Math.max(2,size*0.05); ctx.strokeStyle=GOLD; roundRect(bx,by,boxW,boxH,18); ctx.stroke();
+    // gold text
+    ctx.fillStyle=GOLD_L;
+  } else if(subStyle==='bar'){
+    ctx.fillStyle='rgba(6,53,42,.8)';
+    ctx.fillRect(0,yCenter-blockH/2-size*0.6,W,blockH+size*1.2);
+    ctx.lineWidth=2;ctx.strokeStyle=GOLD;
+    ctx.beginPath();ctx.moveTo(0,yCenter-blockH/2-size*0.6);ctx.lineTo(W,yCenter-blockH/2-size*0.6);
+    ctx.moveTo(0,yCenter+blockH/2+size*0.6);ctx.lineTo(W,yCenter+blockH/2+size*0.6);ctx.stroke();
+    ctx.fillStyle=GOLD_L;
+  } else {
+    // plain: gold text with dark emerald shadow
+    ctx.fillStyle=GOLD_L; ctx.shadowColor='rgba(2,13,10,.9)'; ctx.shadowBlur=size*0.4; ctx.shadowOffsetY=2;
+  }
+  ctx.font=font;
+  lines.forEach((l,i)=>ctx.fillText(l,W/2, yCenter-blockH/2+size + i*lh - size*0.2));
+  ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+  ctx.restore();
+}
+function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+function drawSubFrame(){
+  if(S.mode!=='subtitle') return;
+  const W=S.w,H=S.h;
+  if(videoReady){ try{ ctx.drawImage(srcVideoEl,0,0,W,H); }catch(e){ ctx.fillStyle='#000';ctx.fillRect(0,0,W,H); } }
+  else { ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(247,243,232,.4)';ctx.textAlign='center';ctx.font='28px "Cormorant Garamond"';
+    ctx.fillText('Importe une vidéo dans le panneau de gauche.',W/2,H/2); return; }
+  drawSubtitleOverlay(W,H,srcVideoEl.currentTime);
+  // fixed signature (not a subtitle, no fade)
+  if(S.handle){ ctx.save();ctx.textAlign='center';ctx.fillStyle='#c9a227';
+    ctx.font=`${Math.round(24*(W/1080))}px "Jost"`;ctx.shadowColor='rgba(2,13,10,.7)';ctx.shadowBlur=6;
+    ctx.fillText(S.handle,W/2,H-H*0.035);ctx.restore(); }
+}
+
+function toggleSubPreview(){
+  if(!videoReady){ $('recStatus').textContent='Importe d’abord une vidéo.'; return; }
+  if(subPlaying){ srcVideoEl.pause(); subPlaying=false; $('subPlayBtn').textContent='▶ Lecture'; cancelAnimationFrame(subRAF); return; }
+  subPlaying=true; $('subPlayBtn').textContent='⏸ Pause'; srcVideoEl.play();
+  (function loop(){ drawSubFrame(); if(subPlaying && !srcVideoEl.ended) subRAF=requestAnimationFrame(loop);
+    else { subPlaying=false; $('subPlayBtn').textContent='▶ Lecture'; } })();
+}
+
+async function exportSubtitledVideo(){
+  if(!videoReady){ $('recStatus').textContent='Importe d’abord une vidéo.'; return; }
+  if(recording){ recording=false; $('subExportBtn').textContent='⬇ Exporter le .mp4 sous-titré'; try{srcVideoEl.pause();mediaRec.stop();}catch(e){} return; }
+  recording=true; $('subExportBtn').textContent='■ Arrêter l’export';
+  $('recStatus').innerHTML='<span class="spinner"></span>Export en cours… (la vidéo défile automatiquement jusqu’à la fin)';
+  let audioStream=null;
+  try{
+    if(!srcVideoEl._mediaNode){
+      recAC=new (window.AudioContext||window.webkitAudioContext)();
+      if(recAC.state==='suspended') await recAC.resume();
+      srcVideoEl._mediaNode=recAC.createMediaElementSource(srcVideoEl);
+      srcVideoEl._dest=recAC.createMediaStreamDestination();
+      srcVideoEl._mediaNode.connect(srcVideoEl._dest); srcVideoEl._mediaNode.connect(recAC.destination);
+    } else if(recAC && recAC.state==='suspended'){ await recAC.resume(); }
+    audioStream=srcVideoEl._dest.stream;
+  }catch(e){ console.warn('audio fail',e); }
+  const canvasStream=cv.captureStream(30);
+  const tracks=[...canvasStream.getVideoTracks()];
+  if(audioStream) tracks.push(...audioStream.getAudioTracks());
+  const mixed=new MediaStream(tracks);
+  chunks=[];
+  let mime, real=false;
+  for(const c of ['video/mp4;codecs=avc1.42E01E,mp4a.40.2','video/mp4']){ if(MediaRecorder.isTypeSupported(c)){mime=c;real=true;break;} }
+  if(!mime) mime=MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')?'video/webm;codecs=vp9,opus':'video/webm';
+  recRealMp4=real;
+  mediaRec=new MediaRecorder(mixed,{mimeType:mime,videoBitsPerSecond:8000000});
+  mediaRec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
+  mediaRec.onstop=()=>{
+    const blob=new Blob(chunks,{type:recRealMp4?'video/mp4':'video/webm'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');
+    a.download='noor-sous-titres.mp4';a.href=url;a.click();
+    $('recStatus').className='hint';
+    $('recStatus').innerHTML=recRealMp4?'✓ Vidéo .mp4 sous-titrée téléchargée.':'✓ Téléchargée en .mp4 (WebM sous extension .mp4 ; si Instagram refuse, poste depuis l’app mobile).';
+    recording=false;$('subExportBtn').textContent='⬇ Exporter le .mp4 sous-titré';
+  };
+  srcVideoEl.currentTime=0; srcVideoEl.playbackRate=1;
+  srcVideoEl.onended=()=>{ if(recording){ recording=false; setTimeout(()=>{try{mediaRec.stop();}catch(e){}},300); $('subExportBtn').textContent='⬇ Exporter le .mp4 sous-titré'; } };
+  mediaRec.start();
+  srcVideoEl.play();
+  (function loop(){ drawSubFrame(); if(recording && !srcVideoEl.ended) requestAnimationFrame(loop); })();
+}
+
+/* =================== INIT =================== */
+function start(){loadSaved();renderLibrary();resizeCanvas();draw();}
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(()=>{start();setTimeout(()=>draw(),300);});}else start();
+window.addEventListener('resize',()=>{resizeCanvas();draw();});
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{resizeCanvas();draw();},250);});
+start();
+</script>
+</body>
+</html>
