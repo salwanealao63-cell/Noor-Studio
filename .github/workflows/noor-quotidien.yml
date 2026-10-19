@@ -1,0 +1,118 @@
+name: Noor Studio — vidéo du jour
+
+on:
+  schedule:
+    # 15:00 et 16:00 UTC : un seul des deux tombe à 17h heure de Paris (été / hiver).
+    - cron: '0 15 * * *'
+    - cron: '0 16 * * *'
+  workflow_dispatch:
+    inputs:
+      publier_maintenant:
+        description: 'Publier tout de suite (sans attendre 19h)'
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: noor-quotidien
+  cancel-in-progress: false
+
+jobs:
+  video:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    defaults:
+      run:
+        working-directory: automation
+    steps:
+      - name: Vérifier l'heure (17h Paris)
+        id: gate
+        working-directory: .
+        run: |
+          H=$(TZ=Europe/Paris date +%H)
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "$H" = "17" ]; then echo "go=1" >> $GITHUB_OUTPUT; else echo "go=0" >> $GITHUB_OUTPUT; echo "Pas le bon créneau ($H h à Paris)"; fi
+
+      - uses: actions/checkout@v4
+        if: steps.gate.outputs.go == '1'
+
+      - uses: actions/setup-node@v4
+        if: steps.gate.outputs.go == '1'
+        with:
+          node-version: 22
+
+      - name: Installer Chromium + ffmpeg
+        if: steps.gate.outputs.go == '1'
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          sudo apt-get install -y ffmpeg >/dev/null
+
+      - name: Rendre la vidéo
+        if: steps.gate.outputs.go == '1'
+        run: node render.mjs
+
+      - name: Sauvegarder la vidéo (artefact 7 jours)
+        if: steps.gate.outputs.go == '1' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: noor-${{ github.run_id }}
+          path: |
+            automation/out/video.mp4
+            automation/out/post.json
+            automation/out/erreur.png
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Héberger la vidéo (branche media)
+        if: steps.gate.outputs.go == '1'
+        id: host
+        run: |
+          SKIP=$(node -e "console.log(require('./out/post.json').skip)")
+          if [ "$SKIP" = "true" ]; then echo "skip=1" >> $GITHUB_OUTPUT; exit 0; fi
+          NAME="video-$(date +%Y%m%d-%H%M).mp4"
+          TMP=$(mktemp -d); cp out/video.mp4 "$TMP/$NAME"
+          cd "$TMP" && git init -q -b media && git add "$NAME"
+          git -c user.name="noor-bot" -c user.email="noor-bot@users.noreply.github.com" commit -qm "vidéo du jour"
+          git push -fq "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" media
+          echo "url=https://raw.githubusercontent.com/${{ github.repository }}/media/$NAME" >> $GITHUB_OUTPUT
+
+      - name: Publier
+        if: steps.gate.outputs.go == '1' && steps.host.outputs.skip != '1'
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          IG_HOST: ${{ vars.IG_HOST }}
+          VIDEO_URL: ${{ steps.host.outputs.url }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          WAIT_UNTIL_PUBLISH: ${{ (github.event_name == 'workflow_dispatch' && inputs.publier_maintenant) && '0' || '1' }}
+        run: node publish.mjs
+
+      - name: Avancer la série (state.json)
+        if: steps.gate.outputs.go == '1' && steps.host.outputs.skip != '1'
+        run: |
+          node -e "const p=require('./out/post.json');require('fs').writeFileSync('state.json',JSON.stringify(p.nextState,null,2)+'\n')"
+          git config user.name "noor-bot"; git config user.email "noor-bot@users.noreply.github.com"
+          git add state.json && git commit -qm "Série : sourate $(node -e "const p=require('./out/post.json');console.log(p.sourate+' v'+p.de+'-'+p.a)")" && git push -q
+
+      - name: Renouveler le jeton Instagram (lundi)
+        if: steps.gate.outputs.go == '1' && always()
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          if [ "$(date +%u)" != "1" ] || [ -z "$IG_TOKEN" ] || [ -z "$GH_TOKEN" ]; then exit 0; fi
+          NEW=$(curl -s "https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=$IG_TOKEN" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{console.log(JSON.parse(s).access_token||'')}catch(e){}})")
+          if [ -n "$NEW" ]; then echo "::add-mask::$NEW"; gh secret set IG_TOKEN --body "$NEW" --repo "${{ github.repository }}" && echo "Jeton renouvelé"; fi
+
+      - name: Prévenir en cas d'échec (Telegram)
+        if: failure() && steps.gate.outputs.go == '1'
+        env:
+          T: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          C: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          [ -z "$T" ] && exit 0
+          curl -s "https://api.telegram.org/bot$T/sendMessage" -d chat_id="$C" \
+            --data-urlencode text="⚠️ Noor Studio : la vidéo du jour a échoué. Détails : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >/dev/null
